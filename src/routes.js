@@ -6,6 +6,10 @@ export default [
     handler: handlers.about
   },
   {
+    match: /\/help/,
+    handler: handlers.help
+  },
+  {
     match: /\/start/,
     handler: handlers.start
   }

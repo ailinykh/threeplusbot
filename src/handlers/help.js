@@ -1,11 +1,8 @@
 export default function call (r, msg) {
-  console.log('HANDLERS ABOUT CALLED!', msg);
   const params = {
     to: msg.chat.id,
     text: [
-      '🌐 ThreePlusBot version %s',
-      '',
-      'Telegram: @threeplusbot',
+      'Print list of help commands!',
     ].join('\n'),
   }
 
