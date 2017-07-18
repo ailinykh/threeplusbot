@@ -17,16 +17,16 @@ function dispatch (provider, reply) {
   return provider.send(to, text, telegramOptions)
 }
 
-function handle (dao, provider, route, msg) {
-  return route.handler(dao, msg)
+function handle (r, provider, route, msg) {
+  return route.handler(r, msg)
     .then(partial(dispatch, [provider]))
 }
 
-function subscribe (dao, bot) {
+function subscribe (r, bot) {
   return Promise.all([
     ...routes.map(route => bot
       .subscribe(route.match)
-      .subscribe(partial(handle, [dao, bot, route]))
+      .subscribe(partial(handle, [r, bot, route]))
     )
   ])
 }
