@@ -1,0 +1,24 @@
+{
+  "name": "threeplusbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "BOT_TOKEN=416296710:AAGjCymuNWUdP3nk3ol3K5jt6k84UL-aoF8 nodemon --watch src --exec babel-node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "nodemon": "^1.11.0"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.27.1",
+    "ramda": "^0.24.1",
+    "rethinkdb": "^2.3.3",
+    "rx": "^4.1.0"
+  }
+}
