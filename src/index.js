@@ -8,18 +8,18 @@ import {
   partial,
 } from 'ramda'
 
-function dispatch (provider, reply) {
+function dispatch (bot, reply) {
   const { to, text, options } = reply
   let telegramOptions = {
     parse_mode: 'HTML',
   }
 
-  return provider.send(to, text, telegramOptions)
+  return bot.send(to, text, telegramOptions)
 }
 
-function handle (r, provider, route, msg) {
+function handle (r, bot, route, msg) {
   return route.handler(r, msg)
-    .then(partial(dispatch, [provider]))
+    .then(partial(dispatch, [bot]))
 }
 
 function subscribe (r, bot) {
