@@ -6,6 +6,10 @@ export default [
     handler: handlers.about
   },
   {
+    match: /\/auth/,
+    handler: handlers.auth
+  },
+  {
     match: /\/help/,
     handler: handlers.help
   },
