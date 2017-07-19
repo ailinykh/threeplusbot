@@ -19,11 +19,12 @@ import {
 
 import { reject } from './errors'
 
-const updateCredentials = (r, msg, credentials) =>
-  r.table('chats')
-    .get(msg.chat.id)
-    .update({ 'credentials': credentials })
-    .run()
+function updateCredentials (r, msg, credentials) {
+    return r.table('chats')
+            .get(msg.chat.id)
+            .update({ 'credentials': credentials })
+            .run()
+}
 
 function setAuth (r, msg, login, password) {
   return r.table('chats')
