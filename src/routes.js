@@ -10,6 +10,10 @@ export default [
     handler: handlers.auth
   },
   {
+    match: /\/game/,
+    handler: handlers.game
+  },
+  {
     match: /\/help/,
     handler: handlers.help
   },
