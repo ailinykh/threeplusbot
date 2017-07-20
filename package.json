@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "BOT_TOKEN=416296710:AAGjCymuNWUdP3nk3ol3K5jt6k84UL-aoF8 nodemon --watch src --exec babel-node src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +16,7 @@
     "nodemon": "^1.11.0"
   },
   "dependencies": {
+    "jest": "^20.0.4",
     "node-telegram-bot-api": "^0.27.1",
     "ramda": "^0.24.1",
     "rethinkdbdash": "^2.3.29",
