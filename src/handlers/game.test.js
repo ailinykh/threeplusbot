@@ -1,25 +1,26 @@
 import game from './game'
 
-
-const msg = (text) => ({
+const msg = text => ({
   chat: { id: 1 },
-  text
+  text,
 })
 
-const rethinkdbMock = (games) => ({
+const rethinkdbMock = games => ({
   table: () => ({
     get: () => ({
-      run: () => games ? Promise.resolve({ games }) : Promise.resolve({}),
-      update: (o) => ({
-        run: () => (games = o.games)
-      })
-    })
+      run: () => (games ? Promise.resolve({ games }) : Promise.resolve({})),
+      update: o => ({
+        /* eslint no-param-reassign: "off" */
+        run: () => (games = o.games),
+      }),
+    }),
   }),
-  games: () => games
+  games: () => games,
 })
 
 describe('Setting game tests', () => {
-  let link1, link2
+  let link1
+  let link2
 
   beforeEach(() => {
     link1 = 'http://demo.en.cx/GameDetails.aspx?gid=25701'
@@ -27,31 +28,30 @@ describe('Setting game tests', () => {
   })
 
   it('should save game', () => {
-    let r = rethinkdbMock([])
+    const r = rethinkdbMock([])
     game(r, msg(`/game ${link1}`))
-      .then(() => expect(r.games()).toEqual([ link1 ]))
+      .then(() => expect(r.games()).toEqual([link1]))
   })
 
   it('should prepend new game', () => {
-    let r = rethinkdbMock([ link1 ])
+    const r = rethinkdbMock([link1])
     game(r, msg(`/game ${link2}`))
-      .then(() => expect(r.games()).toEqual([ link2, link1 ]))
+      .then(() => expect(r.games()).toEqual([link2, link1]))
   })
 
   it('should remove duplicated games', () => {
-    let r = rethinkdbMock([ link1, link2 ])
+    const r = rethinkdbMock([link1, link2])
     game(r, msg(`/game ${link2}`))
-      .then(() => expect(r.games()).toEqual([ link2, link1 ]))
+      .then(() => expect(r.games()).toEqual([link2, link1]))
   })
 
   it('should return last added game', () => {
-    let r = rethinkdbMock([ link1, link2 ])
-    game(r, msg('/game')).then(msg => expect(msg.text).toMatch(`${link1}`))
+    const r = rethinkdbMock([link1, link2])
+    game(r, msg('/game')).then(m => expect(m.text).toMatch(`${link1}`))
   })
 
   it('should ask to add new game', () => {
-    let r = rethinkdbMock()
-    game(r, msg('/game')).then(msg => expect(msg.text).toMatch(/⚠️/))
+    const r = rethinkdbMock()
+    game(r, msg('/game')).then(m => expect(m.text).toMatch(/⚠️/))
   })
-
 })

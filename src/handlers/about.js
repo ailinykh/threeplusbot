@@ -1,5 +1,4 @@
 export default function call (r, msg) {
-  console.log('HANDLERS ABOUT CALLED!', msg);
   const params = {
     to: msg.chat.id,
     text: [

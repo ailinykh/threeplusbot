@@ -4,7 +4,6 @@ import {
   equals,
   has,
   ifElse,
-  isNil,
   length,
   lensProp,
   over,
@@ -18,40 +17,40 @@ import {
 } from 'ramda'
 
 function updateGames (r, msg, games) {
-    return r.table('chats')
-            .get(msg.chat.id)
-            .update({ 'games': games })
-            .run()
+  return r.table('chats')
+    .get(msg.chat.id)
+    .update({ games })
+    .run()
 }
 
 
-function respondCurrentGame(r, msg) {
+function respondCurrentGame (r, msg) {
   return r.table('chats')
-          .get(msg.chat.id)
-          .run()
-          .then(ifElse(
-            has('games'),
-            (group) => Promise.resolve({ to: msg.chat.id, text: `Текущая игра: ${group.games[0]}` }),
-            () => Promise.resolve({ to: msg.chat.id, text: '⚠️ Игра не задана. Укажите игру командой:\n\n/game <i>&lt;ссылка на игру&gt;</i>' }),
-          ))
+    .get(msg.chat.id)
+    .run()
+    .then(ifElse(
+      has('games'),
+      group => Promise.resolve({ to: msg.chat.id, text: `Текущая игра: ${group.games[0]}` }),
+      () => Promise.resolve({ to: msg.chat.id, text: '⚠️ Игра не задана. Укажите игру командой:\n\n/game <i>&lt;ссылка на игру&gt;</i>' }),
+    ))
 }
 
-function respondNewGame(r, msg, link) {
+function respondNewGame (r, msg, link) {
   return r.table('chats')
-          .get(msg.chat.id)
-          .run()
-          .then(ifElse(
-            has('games'),
-            over(lensProp('games'), prepend(link)),
-            assoc('games', [link]),
-          ))
-          .then(prop('games'))
-          .then(uniq)
-          .then(partial(updateGames, [r, msg]))
-          .then(() => ({
-            to: msg.chat.id,
-            text: '✅ Игра выбрана!'
-          }))
+    .get(msg.chat.id)
+    .run()
+    .then(ifElse(
+      has('games'),
+      over(lensProp('games'), prepend(link)),
+      assoc('games', [link]),
+    ))
+    .then(prop('games'))
+    .then(uniq)
+    .then(partial(updateGames, [r, msg]))
+    .then(() => ({
+      to: msg.chat.id,
+      text: '✅ Игра выбрана!',
+    }))
 }
 
 export default function call (r, msg) {
@@ -60,6 +59,6 @@ export default function call (r, msg) {
     .then(ifElse(
       pipe(length, equals(2)),
       pipe(takeLast(1), apply(partial(respondNewGame, [r, msg]))),
-      partial(respondCurrentGame, [r, msg])
+      partial(respondCurrentGame, [r, msg]),
     ))
 }

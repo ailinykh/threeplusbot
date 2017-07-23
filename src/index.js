@@ -1,52 +1,52 @@
-import database from './database'
-import bot from './bot'
-import routes from './routes'
-
-import { Observable } from 'rx'
 import {
   apply,
   partial,
 } from 'ramda'
 
-function handleError (bot, error) {
+import database from './database'
+import bot from './bot'
+import routes from './routes'
+
+function handleError (b, error) {
   if (error.msg) {
-    return bot.send(error.msg.chat.id, error.text, { parse_mode: 'HTML' })
+    return b.send(error.msg.chat.id, error.text, { parse_mode: 'HTML' })
   }
 
   console.error('An error returned something not sendable')
   console.error(error)
+  return null
 }
 
-function dispatch (bot, reply) {
-  const { to, text, options } = reply
-  let telegramOptions = {
+function dispatch (b, reply) {
+  const { to, text } = reply
+  const telegramOptions = {
     parse_mode: 'HTML',
   }
 
-  return bot.send(to, text, telegramOptions)
+  return b.send(to, text, telegramOptions)
 }
 
-function handle (r, bot, route, msg) {
+function handle (r, b, route, msg) {
   return route.handler(r, msg)
-    .then(partial(dispatch, [bot]))
-    .catch(partial(handleError, [bot]))
+    .then(partial(dispatch, [b]))
+    .catch(partial(handleError, [b]))
     .catch(partial(console.error, [`${msg.chat} ERR "${msg.text}":`]))
 }
 
-function subscribe (r, bot) {
+function subscribe (r, b) {
   return Promise.all([
-    ...routes.map(route => bot
+    ...routes.map(route => b
       .subscribe(route.match)
-      .subscribe(partial(handle, [r, bot, route]),
-        (err) => console.error('Unhandled error:', err),
-      )
-    )
+      .subscribe(partial(handle, [r, b, route]),
+        err => console.error('Unhandled error:', err),
+      ),
+    ),
   ])
 }
 
 Promise.all([
   database.connect(),
-  bot.start()
+  bot.start(),
 ])
-.then(apply(subscribe))
-.catch(e => console.error(e))
+  .then(apply(subscribe))
+  .catch(e => console.error(e))

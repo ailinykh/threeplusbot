@@ -4,13 +4,6 @@ import {
   partial,
 } from 'ramda'
 
-function createChat(r, msg) {
-  return r.table('chats')
-          .insert(msg.chat)
-          .run()
-          .then(partial(welcome, [r, msg]))
-}
-
 function welcome (r, msg) {
   const params = {
     to: msg.chat.id,
@@ -28,11 +21,18 @@ function welcome (r, msg) {
   return Promise.resolve(params)
 }
 
+function createChat (r, msg) {
+  return r.table('chats')
+    .insert(msg.chat)
+    .run()
+    .then(partial(welcome, [r, msg]))
+}
+
 export default function call (r, msg) {
   return r.table('chats').get(msg.chat.id).run()
     .then(ifElse(
       isNil,
       partial(createChat, [r, msg]),
-      partial(welcome, [r, msg])
+      partial(welcome, [r, msg]),
     ))
 }

@@ -6,7 +6,7 @@ import {
 } from 'ramda'
 
 const r = rethinkdbdash({
-  db: 'threeplusbot'
+  db: 'threeplusbot',
 })
 
 const createDatabase = () =>
@@ -18,14 +18,18 @@ const createTables = () =>
     .tableCreate('chats')
     .run()
 
-const dropDatabase = () =>
-  r.dbList()
-    .run()
-    .then((list) => {
-      if (contains('threeplusbot', list)) {
-        return r.dbDrop('threeplusbot').run()
-      }
-    })
+// const dropDatabase = () =>
+//   r.dbList()
+//     .run()
+//     .then(ifElse(
+//       contains('threeplusbot'),
+//       () => r.dbDrop('threeplusbot').run(),
+//       () => {},
+//     ))
+
+function build () {
+  return r
+}
 
 function create () {
   return Promise.resolve()
@@ -40,12 +44,8 @@ function setup () {
     .then(ifElse(
       contains('threeplusbot'),
       partial(build, []),
-      partial(create, [])
+      partial(create, []),
     ))
-}
-
-function build () {
-  return r
 }
 
 function connect () {
