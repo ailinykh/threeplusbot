@@ -17,6 +17,6 @@ describe('encounter provider test', () => {
   it('should validate login and password', () => {
     // expect.assertions(1)
     jest.mock('request-promise')
-    return encounter.level(null, null, {}).then(msg => console.log(msg))
+    return encounter.level(null, null, {}).then((msg) => console.log(msg))
   })
 })

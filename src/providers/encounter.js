@@ -5,17 +5,14 @@ import cheerio from 'cheerio'
 import {
   apply,
   assoc,
-  call,
   compose,
   contains,
   evolve,
   filter,
   fromPairs,
-  has,
   head,
   ifElse,
   invoker,
-  isNil,
   map,
   merge,
   objOf,
@@ -24,7 +21,6 @@ import {
   pick,
   pipe,
   prop,
-  remove,
   replace,
   split,
   values,
@@ -34,17 +30,17 @@ import {
 import { reject } from '../handlers/errors'
 
 const playGameUrl = (host, gid) => `http://m.${host}/gameengines/encounter/play/${gid}`
-const loginUrl = host => `http://m.${host}/login/signin/`
-const transformBody = body => cheerio.load(body)
+const loginUrl = (host) => `http://m.${host}/login/signin/`
+const transformBody = (body) => cheerio.load(body)
 
-function update (r, msg, obj) {
+function update(r, msg, obj) {
   return r.table('chats')
     .get(msg.chat.id)
     .update(obj)
     .run()
 }
 
-function getPlayGameUrl (link) {
+function getPlayGameUrl(link) {
   return Promise.resolve(link)
     .then(pipe(url.parse))
     .then(pick(['host', 'query']))
@@ -56,7 +52,7 @@ function getPlayGameUrl (link) {
     .then(apply(playGameUrl))
 }
 
-function getLoginUrl (link) {
+function getLoginUrl(link) {
   return Promise.resolve(link)
     .then(pipe(url.parse))
     .then(pick(['host']))
@@ -67,18 +63,18 @@ function getLoginUrl (link) {
     .then(apply(loginUrl))
 }
 
-function checkNotAuthorized ($) {
+function checkNotAuthorized($) {
   return $('#Login').length
 }
 
-function parseCookies (cookies) {
+function parseCookies(cookies) {
   return Promise.resolve(cookies)
     .then(filter(contains('token')))
     .then(map(compose(split('='), head, split(';'))))
     .then(fromPairs)
 }
 
-function authorize (r, msg, game, Login, Password) {
+function authorize(r, msg, game, Login, Password) {
   // TODO: captcha!
   const params = {
     method: 'POST',
@@ -99,7 +95,7 @@ function authorize (r, msg, game, Login, Password) {
     .then(partial(console.log, ['💥 Authorized successfully!']))
 }
 
-function parseLevel (r, msg, game, $) {
+function parseLevel(r, msg, game, $) {
   // Not in game yet
   if ($('a.button').text() === 'Start the game') {
     return reject(msg, '❌ Вы не в игре! Зайдите в движок и нажмите кнопку "Начать игру"')
@@ -107,7 +103,7 @@ function parseLevel (r, msg, game, $) {
   return console.log('PARSE LEVEL MOTHERFUCKER!', $.html())
 }
 
-function level (r, msg, game, login, password) {
+function level(r, msg, game, login, password) {
   const params = {
     uri: game.playUrl,
     transform: transformBody,
@@ -121,7 +117,7 @@ function level (r, msg, game, login, password) {
     ))
 }
 
-function getGame (link) {
+function getGame(link) {
   return Promise.all([
     getPlayGameUrl(link),
     getLoginUrl(link),

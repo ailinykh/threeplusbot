@@ -1,6 +1,6 @@
 import g from './game'
 
-const msg = text => ({
+const msg = (text) => ({
   chat: { id: 1 },
   text,
 })
@@ -9,7 +9,7 @@ const rethinkdbMock = (game, games) => ({
   table: () => ({
     get: () => ({
       run: () => Promise.resolve({ game, games }),
-      update: o => ({
+      update: (o) => ({
         /* eslint no-param-reassign: "off" */
         run: () => {
           games = Object.assign(games, o.games)
@@ -17,7 +17,7 @@ const rethinkdbMock = (game, games) => ({
           return Promise.resolve({ game, games })
         },
       }),
-      replace: o => ({
+      replace: (o) => ({
         run: () => {
           if (o.games) {
             games = o.games
@@ -75,7 +75,7 @@ describe('Setting game tests', () => {
   it('should return current game', () => {
     const currentGame = { title: 'Some game title', url: link1 }
     const r = rethinkdbMock(currentGame, [])
-    return g(r, msg('/game')).then(m => expect(m.text).toContain(link1))
+    return g(r, msg('/game')).then((m) => expect(m.text).toContain(link1))
   })
 
   it('should ask to add new game', () => {
@@ -87,6 +87,6 @@ describe('Setting game tests', () => {
         }),
       }),
     }
-    return g(r, msg('/game')).then(m => expect(m.text).toMatch(/⚠️/))
+    return g(r, msg('/game')).then((m) => expect(m.text).toMatch(/⚠️/))
   })
 })

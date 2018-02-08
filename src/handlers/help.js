@@ -1,4 +1,4 @@
-export default function call (r, msg) {
+export default function call(r, msg) {
   const params = {
     to: msg.chat.id,
     text: [

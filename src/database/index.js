@@ -27,18 +27,18 @@ const createTables = () =>
 //       () => {},
 //     ))
 
-function build () {
+function build() {
   return r
 }
 
-function create () {
+function create() {
   return Promise.resolve()
     .then(createDatabase)
     .then(createTables)
     .then(build)
 }
 
-function setup () {
+function setup() {
   return r.dbList()
     .run()
     .then(ifElse(
@@ -48,7 +48,7 @@ function setup () {
     ))
 }
 
-function connect () {
+function connect() {
   return setup()
 }
 

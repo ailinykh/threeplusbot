@@ -10,7 +10,7 @@ import {
 
 import encounter from './encounter'
 
-function resolve (link) {
+function resolve(link) {
   return Promise.resolve(link)
     .then(pipe(url.parse))
     .then(prop('host'))

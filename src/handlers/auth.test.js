@@ -1,15 +1,15 @@
 import auth from './auth'
 
-const getMessage = text => ({
+const getMessage = (text) => ({
   chat: { id: 1 },
   text,
 })
 
-const rethinkdbMock = credentials => ({
+const rethinkdbMock = (credentials) => ({
   table: () => ({
     get: () => ({
       run: () => Promise.resolve({ credentials }),
-      update: o => ({
+      update: (o) => ({
         /* eslint no-param-reassign: "off" */
         run: () => (credentials = o.credentials),
       }),
@@ -39,6 +39,6 @@ describe('Setting credentials tests', () => {
 
   it('should reject if not enough parameters', () => {
     const r = rethinkdbMock([])
-    auth(r, getMessage('/auth loginonly')).catch(e => expect(e.text).toMatch(/❌/))
+    auth(r, getMessage('/auth loginonly')).catch((e) => expect(e.text).toMatch(/❌/))
   })
 })

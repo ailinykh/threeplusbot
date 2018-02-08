@@ -7,7 +7,7 @@ import database from './database'
 import bot from './bot'
 import routes from './routes'
 
-function handleError (b, error) {
+function handleError(b, error) {
   if (error.msg) {
     return b.send(error.msg.chat.id, error.text, { parse_mode: 'HTML' })
   }
@@ -17,7 +17,7 @@ function handleError (b, error) {
   return null
 }
 
-function dispatch (b, reply) {
+function dispatch(b, reply) {
   const { to, text } = reply
   const telegramOptions = {
     parse_mode: 'HTML',
@@ -26,19 +26,19 @@ function dispatch (b, reply) {
   return b.send(to, text, telegramOptions)
 }
 
-function handle (r, b, route, msg) {
+function handle(r, b, route, msg) {
   return route.handler(r, msg)
     .then(partial(dispatch, [b]))
     .catch(partial(handleError, [b]))
     .catch(partial(console.error, [`${msg.chat.id} ERR "${msg.text}":`]))
 }
 
-function subscribe (r, b) {
+function subscribe(r, b) {
   return Promise.all([
-    ...routes.map(route => b
+    ...routes.map((route) => b
       .subscribe(route.match)
       .subscribe(partial(handle, [r, b, route]),
-        err => console.error('Unhandled error:', err),
+        (err) => console.error('Unhandled error:', err),
       ),
     ),
   ])
@@ -49,4 +49,4 @@ Promise.all([
   bot.start(),
 ])
   .then(apply(subscribe))
-  .catch(e => console.error(e))
+  .catch((e) => console.error(e))

@@ -6,16 +6,16 @@ import {
   partial,
 } from 'ramda'
 
-function buildFilter (stream, regex) {
+function buildFilter(stream, regex) {
   const match = new RegExp(regex)
-  return stream.filter(msg => match.test(msg.text))
+  return stream.filter((msg) => match.test(msg.text))
 }
 
-function sendMessage (bot, chat, message, options) {
+function sendMessage(bot, chat, message, options) {
   bot.sendMessage(chat, message, options)
 }
 
-function start () {
+function start() {
   const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true })
   const stream = Observable.fromEvent(bot, 'message')
 

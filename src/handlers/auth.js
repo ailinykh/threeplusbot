@@ -18,14 +18,14 @@ import {
 
 import { reject } from './errors'
 
-function updateCredentials (r, msg, credentials) {
+function updateCredentials(r, msg, credentials) {
   return r.table('chats')
     .get(msg.chat.id)
     .update({ credentials })
     .run()
 }
 
-function setAuth (r, msg, login, password) {
+function setAuth(r, msg, login, password) {
   return r.table('chats')
     .get(msg.chat.id)
     .run()
@@ -43,7 +43,7 @@ function setAuth (r, msg, login, password) {
     }))
 }
 
-export default function call (r, msg) {
+export default function call(r, msg) {
   return Promise.resolve(msg.text)
     .then(split(' '))
     .then(ifElse(
