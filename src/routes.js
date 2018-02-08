@@ -21,4 +21,8 @@ export default [
     match: /\/start/,
     handler: handlers.start,
   },
+  {
+    match: /\/(task|level)/,
+    handler: handlers.level,
+  },
 ]

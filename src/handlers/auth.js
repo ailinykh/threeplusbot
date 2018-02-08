@@ -49,6 +49,6 @@ export default function call (r, msg) {
     .then(ifElse(
       pipe(length, equals(3)),
       pipe(takeLast(2), apply(partial(setAuth, [r, msg]))),
-      partial(reject, [msg, '❌ Ошибка! Недостаточно аргументов.\n\n/auth <i>&lt;login&gt; &lt;password&gt;</i>']),
+      partial(reject, [msg, '❌ Ошибка! Недостаточно аргументов.\n/auth <i>&lt;login&gt; &lt;password&gt;</i>']),
     ))
 }

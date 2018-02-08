@@ -30,7 +30,7 @@ function handle (r, b, route, msg) {
   return route.handler(r, msg)
     .then(partial(dispatch, [b]))
     .catch(partial(handleError, [b]))
-    .catch(partial(console.error, [`${msg.chat} ERR "${msg.text}":`]))
+    .catch(partial(console.error, [`${msg.chat.id} ERR "${msg.text}":`]))
 }
 
 function subscribe (r, b) {

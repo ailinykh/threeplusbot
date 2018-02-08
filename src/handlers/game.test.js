@@ -1,20 +1,36 @@
-import game from './game'
+import g from './game'
 
 const msg = text => ({
   chat: { id: 1 },
   text,
 })
 
-const rethinkdbMock = games => ({
+const rethinkdbMock = (game, games) => ({
   table: () => ({
     get: () => ({
-      run: () => (games ? Promise.resolve({ games }) : Promise.resolve({})),
+      run: () => Promise.resolve({ game, games }),
       update: o => ({
         /* eslint no-param-reassign: "off" */
-        run: () => (games = o.games),
+        run: () => {
+          games = Object.assign(games, o.games)
+          game = Object.assign(game, o.game)
+          return Promise.resolve({ game, games })
+        },
+      }),
+      replace: o => ({
+        run: () => {
+          if (o.games) {
+            games = o.games
+          }
+          if (o.game) {
+            game = o.game
+          }
+          return Promise.resolve({ game, games })
+        },
       }),
     }),
   }),
+  game: () => game,
   games: () => games,
 })
 
@@ -28,30 +44,49 @@ describe('Setting game tests', () => {
   })
 
   it('should save game', () => {
-    const r = rethinkdbMock([])
-    game(r, msg(`/game ${link1}`))
-      .then(() => expect(r.games()).toEqual([link1]))
+    expect.assertions(1)
+    const r = rethinkdbMock({}, [])
+    return g(r, msg(`/game ${link1}`))
+      .then(() => expect(r.game().url).toEqual(link1))
   })
 
-  it('should prepend new game', () => {
-    const r = rethinkdbMock([link1])
-    game(r, msg(`/game ${link2}`))
-      .then(() => expect(r.games()).toEqual([link2, link1]))
+  it('should not save unknown providers game', () => {
+    expect.assertions(1)
+    const r = rethinkdbMock({}, [])
+    return expect(g(r, msg(`/game ${link2}`))).rejects.toBeDefined()
   })
 
-  it('should remove duplicated games', () => {
-    const r = rethinkdbMock([link1, link2])
-    game(r, msg(`/game ${link2}`))
-      .then(() => expect(r.games()).toEqual([link2, link1]))
+  it('should archive old game with tasks', () => {
+    expect.assertions(1)
+    const currentGameWithTasks = { title: 'Some game title', tasks: [] }
+    const r = rethinkdbMock(currentGameWithTasks, [])
+    return g(r, msg(`/game ${link1}`))
+      .then(() => expect(r.games()).toEqual([currentGameWithTasks]))
   })
 
-  it('should return last added game', () => {
-    const r = rethinkdbMock([link1, link2])
-    game(r, msg('/game')).then(m => expect(m.text).toMatch(`${link1}`))
+  it('should not archive old game without tasks', () => {
+    expect.assertions(1)
+    const currentGameWithOutTasks = { title: 'Some game title' }
+    const r = rethinkdbMock(currentGameWithOutTasks, [])
+    return g(r, msg(`/game ${link1}`))
+      .then(() => expect(r.games()).toEqual([]))
+  })
+
+  it('should return current game', () => {
+    const currentGame = { title: 'Some game title', url: link1 }
+    const r = rethinkdbMock(currentGame, [])
+    return g(r, msg('/game')).then(m => expect(m.text).toContain(link1))
   })
 
   it('should ask to add new game', () => {
-    const r = rethinkdbMock()
-    game(r, msg('/game')).then(m => expect(m.text).toMatch(/⚠️/))
+    expect.assertions(1)
+    const r = {
+      table: () => ({
+        get: () => ({
+          run: () => Promise.resolve({ games: [] }),
+        }),
+      }),
+    }
+    return g(r, msg('/game')).then(m => expect(m.text).toMatch(/⚠️/))
   })
 })
